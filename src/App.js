@@ -10,19 +10,8 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import CreateNewList from './components/CreateNewList'
 import './App.css';
-
-class TempPlay extends React.Component {
-  render() {
-    return (
-      <Card>
-        <Card.Body>
-          Whatever! A general space to practise
-        </Card.Body>
-      </Card>
-    );
-  }
-}
 
 class Home extends React.Component {
   render() {
@@ -50,14 +39,15 @@ class App extends React.Component{
           <Navbar bg="light" expand="lg">
             <Navbar.Brand as={Link} to="/">Learning!</Navbar.Brand>
             <NavDropdown title="Options" id="basic-nav-dropdown" className="nav-item dropdown ml-auto">
-              <NavDropdown.Item as={Link} to="/">Home</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/temp-play">Play time</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/">My lists home</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/create-new-list">Create new list</NavDropdown.Item>
+              <NavDropdown.Item href="../">Guess Words Home</NavDropdown.Item>
             </NavDropdown>
           </Navbar>
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
-            <Route path="/temp-play">
-              <TempPlay />
+            <Route path="/create-new-list">
+              <CreateNewList />
             </Route>                       
             <Route path="/">
               <Home />
