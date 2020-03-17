@@ -37,9 +37,9 @@ class App extends React.Component{
       <Router basename={'/edit'}>
         <Container>
           <Navbar bg="light" expand="lg">
-            <Navbar.Brand as={Link} to="/">Learning!</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">MY Guess Words!</Navbar.Brand>
             <NavDropdown title="Options" id="basic-nav-dropdown" className="nav-item dropdown ml-auto">
-              <NavDropdown.Item as={Link} to="/">My lists home</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/">MY Guess Words home</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/create-new-list">Create new list</NavDropdown.Item>
               <NavDropdown.Item href="../">Guess Words Home</NavDropdown.Item>
             </NavDropdown>

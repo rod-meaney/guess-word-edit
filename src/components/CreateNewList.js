@@ -30,7 +30,6 @@ class CreateNewList extends React.Component {
 
   handleSubmit = event => {
     const form = event.currentTarget;
-    console.log(this.state);
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
@@ -40,7 +39,6 @@ class CreateNewList extends React.Component {
       }).then((response) => {
         return response.json();
       }).then((jsonData) => {
-        console.log(jsonData);
         this.setState({saved:true});
       });
     }
