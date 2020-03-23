@@ -4,6 +4,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
+import {PersonFill} from 'react-bootstrap-icons'
 import {
   BrowserRouter as Router,
   Switch,
@@ -32,16 +33,44 @@ class Home extends React.Component {
 }
 
 class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      auth:false,
+      user:"anonymous"
+    }
+  }  
+
+  componentDidMount(){
+    let that = this;
+    fetch(process.env.REACT_APP_URL+'/api/user')
+    .then(results => {
+      return results.json()})
+    .then(data => {
+      let returned_user = data.response;
+      if (returned_user !== "anonymous"){
+        that.setState({
+          auth:true,
+          user: returned_user
+        })
+      }
+    }).catch(function(error) {
+      console.log('Fetch user has failed so assume anonymous - do nothing');
+   });
+  }
+
   render() {
     return (
       <Router basename={'/edit'}>
         <Container>
           <Navbar bg="light" expand="lg">
-            <Navbar.Brand as={Link} to="/">MY Guess Words!</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">WWII Admin</Navbar.Brand>
             <NavDropdown title="Options" id="basic-nav-dropdown" className="nav-item dropdown ml-auto">
               <NavDropdown.Item as={Link} to="/">MY Guess Words home</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/create-new-list">Create new list</NavDropdown.Item>
-              <NavDropdown.Item href="../">Guess Words Home</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="../">Return to WWII</NavDropdown.Item>
+              <NavDropdown.Item><PersonFill /> {this.state.user}</NavDropdown.Item>
             </NavDropdown>
           </Navbar>
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
