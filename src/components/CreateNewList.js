@@ -4,11 +4,18 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 class ListSaved extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {}
+  }
   render() {
     return (
       <Card>
         <Card.Body>
+          <p>
           Well Saved!
+          </p>
+          {this.props.stdOption()}
         </Card.Body>
       </Card>
     );
@@ -59,7 +66,7 @@ class CreateNewList extends React.Component {
 
   render() {
     if (this.state.saved){
-      return (<ListSaved />);
+      return (<ListSaved stdOption={this.props.stdOption} />);
     } else {
       return (
         <Card>
