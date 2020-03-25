@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import CreateNewList from './components/CreateNewList'
 import './App.css';
+import MyLists from './components/MyLists';
 
 class LoggedIn extends React.Component {
   render() {
@@ -75,7 +76,7 @@ class App extends React.Component{
   standardOptions(){
     return (
       <>
-        <NavDropdown.Item as={Link} to="/">Manage my lists</NavDropdown.Item>
+        <NavDropdown.Item as={Link} to="/my-lists">My lists</NavDropdown.Item>
         <NavDropdown.Item as={Link} to="/create-new-list">Create new list</NavDropdown.Item>
         <NavDropdown.Item href="../">Return to play game</NavDropdown.Item>
       </>);
@@ -83,7 +84,7 @@ class App extends React.Component{
 
   render() {
     return (
-      <Router basename={'/edit'}>
+      <Router basename={`/${process.env.REACT_APP_SUB_BASE}`}>
         <Container>
           <Navbar bg="light" expand="lg">
             <Navbar.Brand as={Link} to="/">WWII Admin</Navbar.Brand>
@@ -98,6 +99,9 @@ class App extends React.Component{
             <Route path="/create-new-list">
               <CreateNewList stdOption={this.standardOptions} />
             </Route>
+            <Route path="/my-lists">
+              <MyLists api="my-lists" />
+            </Route>            
             <Route path="/logged-in">
               <LoggedIn 
                 user={this.state.user} 
