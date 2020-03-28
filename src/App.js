@@ -10,9 +10,11 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import CreateNewList from './components/CreateNewList'
+import ListEdit from './components/ListEdit'
+import ListCreateNew from './components/ListCreateNew'
 import './App.css';
 import MyLists from './components/MyLists';
+import ListSaved from './components/ListSaved';
 
 class LoggedIn extends React.Component {
   render() {
@@ -97,8 +99,15 @@ class App extends React.Component{
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
             <Route path="/create-new-list">
-              <CreateNewList stdOption={this.standardOptions} />
+              <ListCreateNew 
+                stdOption={this.standardOptions} 
+                new={true} />
             </Route>
+            <Route path="/item">
+              <ListEdit 
+                stdOption={this.standardOptions} 
+                new={false} />
+            </Route>            
             <Route path="/my-lists">
               <MyLists api="my-lists" />
             </Route>            
@@ -107,7 +116,12 @@ class App extends React.Component{
                 user={this.state.user} 
                 stdOption={this.standardOptions}
                 />
-            </Route>                                 
+            </Route> 
+            <Route path="/saved">
+              <ListSaved 
+                stdOption={this.standardOptions}
+                />
+            </Route>                                             
             <Route path="/">
               <Home stdOption={this.standardOptions} />
             </Route>

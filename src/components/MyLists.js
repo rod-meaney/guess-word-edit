@@ -13,7 +13,7 @@ class MyListItem extends React.Component {
       name:this.props.name,
       private:this.props.private
     }
-  }  
+  } 
   render() {
     return(
       <ListGroup.Item>{this.state.name}
@@ -23,6 +23,7 @@ class MyListItem extends React.Component {
           </Link>
         </span>
       </ListGroup.Item>
+      
     );
   }
 }
@@ -49,6 +50,10 @@ class MyLists extends React.Component {
    });
   }
 
+  noItems() {
+    return this.state.games.length===0?(<ListGroup.Item>Currently no items</ListGroup.Item>):"";
+  }
+
   render() {
     return (
       <Card>
@@ -61,6 +66,7 @@ class MyLists extends React.Component {
                                               description={item.description}
                                               private={item.private}
                                               />)}
+            {this.noItems()}
           </ListGroup>
         </Card.Body>
       </Card>
