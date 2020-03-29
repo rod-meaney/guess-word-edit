@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import {Redirect} from "react-router-dom";
+import Fetching from './Fetching'
 
 class ListBase extends React.Component {
   constructor(props){
@@ -15,7 +16,8 @@ class ListBase extends React.Component {
       name:"",
       description:"",
       items:"",
-      private: false
+      private: false,
+      saving:false
     }
   }
 
@@ -48,6 +50,7 @@ class ListBase extends React.Component {
     } else {
       let api = '/edit/api/update';
       if (this.props.new) {api = '/edit/api/save';}
+      this.setState({saving:true});
       fetch(process.env.REACT_APP_URL+api, {
         method: 'POST',
         body: JSON.stringify(this.state),
@@ -55,6 +58,8 @@ class ListBase extends React.Component {
         return response.json();
       }).then((jsonData) => {
         this.setState({saved:true});
+      }).finally(()=>{
+        this.setState({saving:false});
       });
     }
     this.setState({validated:true}); //Don't undert=stand how for validation works, but it is nice magic juju
@@ -71,6 +76,8 @@ class ListBase extends React.Component {
       return (<Redirect to="/saved" />);
     } else {
       return (
+        <>
+        <Fetching loading={this.state.saving} message="Saving.." />
         <Card>
           <Card.Body>
             <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
@@ -137,6 +144,7 @@ class ListBase extends React.Component {
             </Form>
           </Card.Body>
         </Card>
+        </>
       );
     }
   }
