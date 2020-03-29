@@ -1,6 +1,5 @@
 import React from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
-import {Link} from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import {ChevronRight} from 'react-bootstrap-icons';
 
@@ -16,14 +15,9 @@ class MyListItem extends React.Component {
   } 
   render() {
     return(
-      <ListGroup.Item>{this.state.name}
-        <span className="float-right">
-        <Link to={`/item?id=${this.state.key}`}>
-          <ChevronRight />
-          </Link>
-        </span>
+      <ListGroup.Item action href={`/${process.env.REACT_APP_SUB_BASE}/item?id=${this.state.key}`}>{this.state.name}
+        <span className="float-right"><ChevronRight /></span>
       </ListGroup.Item>
-      
     );
   }
 }

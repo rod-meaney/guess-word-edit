@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Card from 'react-bootstrap/Card'
-import {PersonFill, Gear} from 'react-bootstrap-icons'
+import {PersonFill, List} from 'react-bootstrap-icons'
 import {
   BrowserRouter as Router,
   Switch,
@@ -89,12 +89,12 @@ class App extends React.Component{
       <Router basename={`/${process.env.REACT_APP_SUB_BASE}`}>
         <Container>
           <Navbar bg="light" expand="lg">
-            <Navbar.Brand as={Link} to="/">WWII Admin</Navbar.Brand>
-            <NavDropdown title={<Gear />} id="basic-nav-dropdown" className="nav-item dropdown ml-auto">
+            <NavDropdown title={<List />} id="basic-nav-dropdown" className="nav-item dropdown mr-auto">
               {this.standardOptions()}
               <NavDropdown.Divider />
               <NavDropdown.Item><PersonFill /> {this.state.user}</NavDropdown.Item>
             </NavDropdown>
+            <Navbar.Brand as={Link} to="/">WWWiT Admin</Navbar.Brand>
           </Navbar>
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
