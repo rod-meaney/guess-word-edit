@@ -2,16 +2,18 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import Card from 'react-bootstrap/Card'
-import {PersonFill, List} from 'react-bootstrap-icons'
+import Card from 'react-bootstrap/Card';
+import Alert from 'react-bootstrap/Alert';
+import {PersonFill} from 'react-bootstrap-icons';
+import {footer} from './components/utils';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link
 } from "react-router-dom";
-import ListEdit from './components/ListEdit'
-import ListCreateNew from './components/ListCreateNew'
+import ListEdit from './components/ListEdit';
+import ListCreateNew from './components/ListCreateNew';
 import './App.css';
 import MyLists from './components/MyLists';
 import ListSaved from './components/ListSaved';
@@ -42,6 +44,7 @@ class Home extends React.Component {
             Administration for WWIT (What word is that)
           </p>
           {this.props.stdOption()}
+          {footer()}
         </Card.Body>
       </Card>
     );
@@ -89,7 +92,7 @@ class App extends React.Component{
       <Router basename={`/${process.env.REACT_APP_SUB_BASE}`}>
         <Container>
           <Navbar bg="light" expand="lg">
-            <NavDropdown title={<List />} id="basic-nav-dropdown" className="nav-item dropdown mr-auto">
+            <NavDropdown title="Menu" id="basic-nav-dropdown" className="nav-item dropdown mr-auto">
               {this.standardOptions()}
               <NavDropdown.Divider />
               <NavDropdown.Item><PersonFill /> {this.state.user}</NavDropdown.Item>
