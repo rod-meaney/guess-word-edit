@@ -4,68 +4,72 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import {Redirect} from "react-router-dom";
-import Fetching from './Fetching'
+import Spinner from 'react-bootstrap/Spinner';
+import ListService from '../../services/ListService';
 
-class ListBase extends React.Component {
+class ListEdit extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      loaded_id:"",
+      //Form handling
       validated:false,
       saved:false,
+      saving:false,
+      saveResponse:"",
+      //Form items
+      loaded_id:"", //only used fro update
       name:"",
       description:"",
       items:"",
       private: false,
-      saving:false
     }
+    this.listService = new ListService();
   }
 
+  handleGetListError(error){
+    //Not really expecting this so have not don much about it
+    alert(error);
+  }
+
+  handleGetList(data) {
+    this.setState(
+      {loaded_id: data.key, 
+        name: data.name, 
+        description: data.description, 
+        items: data.items,
+        private: data.private}
+    )
+  }
+  
   componentDidMount() {
     //this is when we are updating - not needed for new
     if (!this.props.new){
       let parts = window.location.href.split('?id=');
       let id = parts[parts.length-1];
-      let that = this;
-      fetch(`${process.env.REACT_APP_URL}/${process.env.REACT_APP_SUB_BASE}/api/item?id=${id}`)
-      .then(results => {return results.json()})
-      .then(data => { 
-        that.setState({loaded_id: id, 
-                        name: data.name, 
-                        description: data.description, 
-                        items: data.items,
-                        private: data.private});
-      }).catch(function(error) {
-        console.log('Fetch has failed so defaulting in some data for local testing.');
-        let data = {"key": "aghkZXZ-Tm9uZXIRCxIETGlzdBiAgICAgICACQw", "private": false, "name": "Cats", "description": "Purrrrrrrrr", "items": "Abyssinian,Aegean,American Bobtail,American Curl,American Shorthair,American Wirehair,Aphrodite Giant,Arabian Mau,Asian cat,Asian Semi-longhair,Australian Mist,Balinese,Bambino,Bengal,Birman,Bombay,Brazilian Shorthair,British Longhair,British Shorthair,Burmese,Burmilla,California Spangled,Chantilly-Tiffany,Chartreux,Chausie,Colourpoint Shorthair,Cornish Rex,Cymric,Longhaired Manx,Cyprus,Devon Rex,Donskoy,Don Sphynx,Dragon Li,Dwelf,Egyptian Mau,European Shorthair,Exotic Shorthair,Foldex,German Rex,Havana Brown,Highlander,Himalayan,Japanese Bobtail,Javanese,Khao Manee,Korat,Korean Bobtail,Korn Ja,Kurilian Bobtail\u00a0or,Kuril Islands Bobtail,LaPerm,Lykoi,Maine Coon,Manx,Mekong Bobtail,Minskin,Napoleon,Munchkin,Nebelung,Norwegian Forest Cat,Ocicat,Ojos Azules,Oregon Rex,Oriental Bicolor,Oriental Longhair,Oriental Shorthair,Persian,Peterbald,Pixie-bob,Ragamuffin,Ragdoll,Raas,Russian Blue,Russian White,Black,and Tabby,Sam sawet,Savannah,Scottish Fold,Selkirk Rex,Serengeti,Serrade Petit,Siberian,Neva Masquerade,Singapura,Snowshoe,Sokoke,Somali,Sphynx,Suphalak,Thai,Thai Lilac,Tonkinese,Toyger,Turkish Angora,Turkish Van,Ukrainian Levkoy,Wila Krungthep,York Chocolate"};
-        that.setState({loaded_id: id, name: data.name, description: data.description, items: data.items, private: data.private});
-      });
+      this.listService.getList({key:id, result:this.handleGetList.bind(this),error:this.handleGetListError.bind(this)});
     }
   }
+
+  handleReturnSubmit(){this.setState({saving:false,saved:true,saveResponse:"Your list was saved successfully."});}
 
   handleSubmit = event => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
-      let api = '/edit/api/update';
-      if (this.props.new) {api = '/edit/api/save';}
-      this.setState({saving:true});
-      fetch(process.env.REACT_APP_URL+api, {
-        method: 'POST',
-        body: JSON.stringify(this.state),
-      }).then((response) => {
-        return response.json();
-      }).then((jsonData) => {
-        this.setState({saved:true});
-      }).finally(()=>{
-        this.setState({saving:false});
-      });
+      this.listService.saveOrUpdateList({save:this.props.new, form:this.state, result:this.handleReturnSubmit.bind(this)});
     }
     this.setState({validated:true}); //Don't undert=stand how for validation works, but it is nice magic juju
     event.preventDefault(); //We actually never want it to submit, we handle success in the else branch
   };
 
+  handleReturnDelete(){this.setState({saving:false,saved:true,saveResponse:"Your list was deleted successfully."});}
+  handleDelete() {
+    if (window.confirm("This will delete the list permanently.  Are you sure?")){
+      this.listService.deleteList({key:this.state.loaded_id, result:this.handleReturnDelete.bind(this)});
+    }
+  }
+  
   updateName = (event) => {event.preventDefault(); this.setState({name:event.target.value});}
   updateDescription = (event) => {event.preventDefault(); this.setState({description:event.target.value});}
   updateItems = (event) => {event.preventDefault(); this.setState({items:event.target.value});}
@@ -73,11 +77,12 @@ class ListBase extends React.Component {
 
   render() {
     if (this.state.saved){
-      return (<Redirect to="/saved" />);
+      if (this.state.searching) return 
+      return (<Redirect to={`/saved?msg=${this.state.saveResponse}`} />);
     } else {
       return (
         <>
-        <Fetching loading={this.state.saving} message="Saving.." />
+        {this.state.saving?<div><br /><center><span>Saving.. </span> <Spinner style={{verticalAlign:"middle"}} animation="grow"/></center></div>:""}
         <Card>
           <Card.Body>
             <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
@@ -140,7 +145,7 @@ class ListBase extends React.Component {
                   />
                 </Form.Group>
               </Form.Row>
-              <Button type="submit">Save</Button>
+              <Button type="submit">Save</Button>{" "}{this.props.new?"":<Button onClick={()=>this.handleDelete()} variant="danger">Delete</Button>}
             </Form>
           </Card.Body>
         </Card>
@@ -150,4 +155,4 @@ class ListBase extends React.Component {
   }
 }
 
-export default ListBase;
+export default ListEdit;

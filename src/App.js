@@ -2,54 +2,23 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import Card from 'react-bootstrap/Card';
-import Alert from 'react-bootstrap/Alert';
 import {PersonFill} from 'react-bootstrap-icons';
-import {footer} from './components/utils';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link
 } from "react-router-dom";
-import ListEdit from './components/ListEdit';
-import ListCreateNew from './components/ListCreateNew';
 import './App.css';
-import MyLists from './components/MyLists';
-import ListSaved from './components/ListSaved';
+import GamesListMyPage from './pages/GamesListMyPage';
+import HomePage from './pages/HomePage';
+import ListSavedPage from './pages/ListSavedPage';
+import LoggedInPage from './pages/LoggedInPage';
+import ListEditNewPage from './pages/ListEditNewPage';
+import ListEditExistingPage from './pages/ListEditExistingPage';
+import StdOptions from './components/StdOptions';
+import UserService from './services/UserService';
 
-class LoggedIn extends React.Component {
-  render() {
-    return (
-      <Card>
-        <Card.Body>
-          <Card.Title>Logged in page</Card.Title>
-          <p>
-            You are logged in as {this.props.user}. 
-          </p>
-          {this.props.stdOption()}
-        </Card.Body>
-      </Card>
-    );
-  }
-}
-
-class Home extends React.Component {
-  render() {
-    return (
-      <Card>
-        <Card.Body>
-          <Card.Title>WWIT Admin Home</Card.Title>
-          <p>
-            Administration for WWIT (What word is that)
-          </p>
-          {this.props.stdOption()}
-          {footer()}
-        </Card.Body>
-      </Card>
-    );
-  }
-}
 
 class App extends React.Component{
   constructor(props){
@@ -58,33 +27,16 @@ class App extends React.Component{
       auth:false,
       user:"login"
     }
+    this.userService = new UserService();
   }  
 
-  componentDidMount(){
-    let that = this;
-    fetch(process.env.REACT_APP_URL+'/api/user')
-    .then(results => {
-      return results.json()})
-    .then(data => {
-      let returned_user = data.response;
-      if (returned_user !== "anonymous"){
-        that.setState({
-          auth:true,
-          user: returned_user
-        })
-      }
-    }).catch(function(error) {
-      console.log('Fetch user has failed so assume anonymous - do nothing');
-   });
+  retrievedUser(rUser) {
+    //Only update user if the fetch returns something diffenerent than the default user
+    if (rUser !== this.state.user){this.setState({auth:true,user:rUser})}
   }
 
-  standardOptions(){
-    return (
-      <>
-        <NavDropdown.Item as={Link} to="/my-lists">My lists</NavDropdown.Item>
-        <NavDropdown.Item as={Link} to="/create-new-list">Create new list</NavDropdown.Item>
-        <NavDropdown.Item href="../">Return to play game</NavDropdown.Item>
-      </>);
+  componentDidMount(){
+    this.userService.getUser({defaultUser:this.state.user, gotUser:this.retrievedUser.bind(this)});
   }
 
   render() {
@@ -93,7 +45,7 @@ class App extends React.Component{
         <Container>
           <Navbar bg="light" expand="lg">
             <NavDropdown title="Menu" id="basic-nav-dropdown" className="nav-item dropdown mr-auto">
-              {this.standardOptions()}
+              <StdOptions />
               <NavDropdown.Divider />
               <NavDropdown.Item><PersonFill /> {this.state.user}</NavDropdown.Item>
             </NavDropdown>
@@ -102,31 +54,22 @@ class App extends React.Component{
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
             <Route path="/create-new-list">
-              <ListCreateNew 
-                stdOption={this.standardOptions} 
-                new={true} />
+              <ListEditNewPage new={true} />
             </Route>
             <Route path="/item">
-              <ListEdit 
-                stdOption={this.standardOptions} 
-                new={false} />
+              <ListEditExistingPage new={false} />
             </Route>            
             <Route path="/my-lists">
-              <MyLists api="my-lists" />
-            </Route>            
+            <GamesListMyPage api="my-lists" function="edit/item" title="My games admin" />
+            </Route>
             <Route path="/logged-in">
-              <LoggedIn 
-                user={this.state.user} 
-                stdOption={this.standardOptions}
-                />
+              <LoggedInPage user={this.state.user} />
             </Route> 
             <Route path="/saved">
-              <ListSaved 
-                stdOption={this.standardOptions}
-                />
+              <ListSavedPage />
             </Route>                                             
             <Route path="/">
-              <Home stdOption={this.standardOptions} />
+              <HomePage />
             </Route>
           </Switch>
         </Container>
